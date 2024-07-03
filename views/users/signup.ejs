@@ -1,0 +1,40 @@
+<% layout('layouts/boilerplatecode') %>
+
+<div class="back">
+    <div class="cardSignUp col-6 offset-3">
+        <div class="Top">
+            <h1>Sign Up</h1>
+            <br><br>
+            <div class="TagLine">
+                <h3>Welcome to WanderLust</h3>
+                <p>Your Dream Vacation Starts Here!</p>
+            </div>
+        </div>
+        <div class="Bottom">
+            <form action="/signup" method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-lable">Username</label>
+                    <input id="username" name="username" type="text" placeholder="Enter your username" class="form-control" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please enter a username.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-lable">Password</label>
+                    <input id="Password" name="password" type="password" placeholder="Your Password" class="form-control" required>
+                    <div class="invalid-feedback">Please enter a password.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-lable">Email Id</label>
+                    <input id="email" name="email" type="email" placeholder="Enter your Email Id" class="form-control" required>
+                    <div class="valid-feedback">Looks good!</div>
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+
+            <div class="signUpLink">
+                <a class="signLink" href="/login">Login with your account</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,158 @@
+<% layout('layouts/boilerplatecode') %>
+
+
+
+
+
+
+
+<div class="row">
+    <div class="col-8 offset-2 mt-4">
+        <div class="card col-7 offset-2">
+            <h2 class="card-text"> 
+                <%= ListingDetails.title %>
+        
+           </h2>
+            
+            <img class="card-img-top show-img" src="<%= ListingDetails.image.url %>" alt="Card image cap">
+          <div class="card-body">
+          
+           <p> 
+            <% if (currentUser) { %>
+                <% if (ListingDetails.owner.username === currentUser.username) { %>
+                    <p class="card-text"><strong>Owned By You</strong></p>
+                <% } else { %>
+                    <p class="card-text"><strong>Owned By </strong><i><%= ListingDetails.owner.username %></i></p>
+                <% } %>
+            <% } else { %>
+                <p class="card-text"><strong>Owned By </strong><i><%= ListingDetails.owner.username %></i></p>
+            <% } %>
+            <div class="desc">
+                <%= ListingDetails.description %>
+            </div>
+         </p>
+         <h5>
+            <%= ListingDetails.location %>,<%=ListingDetails.country%>
+         </h5>
+         
+        <p>
+            &#8377; <%= ListingDetails.price.toLocaleString("en-IN")%>
+    
+        </p>
+        <br><br>
+        <% if (currentUser && currentUser._id.equals(ListingDetails.owner._id)) { %>
+            <div class="navigations">
+                <a class="btn btn-danger" href="/listings/<%=ListingDetails._id %>/edit">Edit</a>
+    
+                <form  method="post" action="/listings/<%= ListingDetails._id %>?_method=DELETE">
+                    <button class="btn btn-outline-dark">Delete</button>
+            </div>
+        <% } %>
+        
+       
+        </form>
+          </div>
+          </div >
+          <hr>
+<div class="col-8 offset-2 mt-4">
+    <% if (currentUser) { %>
+        <h4>Leave a Review</h4>
+
+        <form action="/listings/<%= ListingDetails._id %>/reviews" method="post" novalidate class="needs-validation">
+            <!-- <div class="mb-3 mt-3">
+                <label for="rating" class="form-lable">Rating</label>
+                <input type="range" class="form-range" max="5" min="1" default="5" name="review[rating]" id="rating" >
+            </div> -->
+            <div class="mb-3 mt-3">
+                <label for="rating" class="form-lable">Rating</label>
+                <fieldset class="starability-heart">
+                    <input type="radio" id="no-rate" class="input-no-rate" name="review[rating]" value="1" checked aria-label="No rating." />
+                    <input type="radio" id="first-rate1" name="review[rating]" value="1" />
+                    <label for="first-rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="first-rate2" name="review[rating]" value="2" />
+                    <label for="first-rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="first-rate3" name="review[rating]" value="3" />
+                    <label for="first-rate3" title="Average">3 stars</label>
+                    <input type="radio" id="first-rate4" name="review[rating]" value="4" />
+                    <label for="first-rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="first-rate5" name="review[rating]" value="5" />
+                    <label for="first-rate5" title="Amazing">5 stars</label>
+                  </fieldset>
+            </div>
+            <div class="mb-3 mt-3">
+                <label for="comment" class="form-lable">Comment</label>
+                <textarea name="review[comment]" id="comment" rows="8" cols="40" class="form-control" required></textarea>
+                <div class="invalid-feedback">
+                    <p>Please add your feedback!</p>
+                </div>
+            </div>
+         <button type="submit" class="btn btn-outline-danger mb-3">Submit</button>
+        </form>
+        <% } %>
+      </div>
+      <% if (ListingDetails.reviews.length !=0) { %>
+        <h3>Customer Reviews</h3>
+    <% for (let review of ListingDetails.reviews) { %>
+        <div class="review">
+            <div class="review-rating">
+               <b>Rating:</b> 
+                <% for (let index = 1; index <= 5; index++) { %>
+                    <% if (index <= review.rating) { %>
+                        <i class="fa-solid fa-star"></i>
+                    <% } else { %>
+                        <i class="fa-regular fa-star"></i>
+                    <% } %>
+                <% } %>
+            </div>
+            <p><%= review.comment %></p>
+            <p><strong>Author:</strong> <%= review.author.username %></p>
+            <div class="review-footer">
+                <p>Reviewed on <%= new Date(review.createdAt).toLocaleDateString(); %></p>
+              </div>
+            <br>
+            <% if (currentUser) { %>
+            <% if (review.author.username === currentUser.username) { %>
+                <form method="POST" action="/listings/<%= ListingDetails._id %>/reviews/<%= review._id %>?_method=DELETE">
+                    <button class="btn btn-sm btn-dark mb-3">Delete</button>
+                </form>
+            <% } %>
+            <% } %>
+            
+        </div>
+    <% } %>
+      <% } %>
+     
+    
+  
+    </div>
+    <div class="col-8 offset-3 mb-3">
+        <h3>Location</h3>
+        <div id="map"></div>
+       
+    </div>
+    
+</div>
+<script>
+    let mapToken = "<%= process.env.MAP_TOKEN %>";
+    mapboxgl.accessToken = mapToken;
+    const coordinates = JSON.parse('<%= JSON.stringify(ListingDetails.geometry.location.coordinates) %>');
+
+    if (Array.isArray(coordinates) && coordinates.length === 2) {
+        const map = new mapboxgl.Map({
+            container: 'map', 
+            center: coordinates, 
+            zoom: 10 
+        });
+
+        new mapboxgl.Marker({color:'crimson'})
+            .setLngLat(coordinates)
+            .setPopup(new mapboxgl.Popup({offset:50})
+            .setHTML("<p>Exact location provided after booking. </p>").setMaxWidth("300px"))
+           
+            .addTo(map);
+    } else {
+        console.error("Invalid coordinates:", coordinates);
+    }
+</script>
+
+  
