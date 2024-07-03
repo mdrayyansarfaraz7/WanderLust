@@ -532,3 +532,8 @@ body{
     cursor: pointer;
     text-decoration: none;
   }
+  @media (max-width: 992px) {
+    .filters {
+        display: none;
+    }
+}
